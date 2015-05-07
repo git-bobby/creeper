@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="maven-antrun-" default="main"  >
+<target name="main">
+  <tstamp prefix="creeper.">
+    <format pattern="yyyyMMddHHmmss" property="time"/>
+  </tstamp>
+  <copy todir="E:\project\GitHub\creeper\creeper\creeper-web/dist" overwrite="true">
+    <fileset dir="E:\project\GitHub\creeper\creeper\creeper-web/target/creeper-web"/>
+  </copy>
+</target>
+</project>

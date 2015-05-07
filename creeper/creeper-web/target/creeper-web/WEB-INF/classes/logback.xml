@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="false" scanPeriod="60 seconds" debug="false">
+	<contextName>cpdemo</contextName>
+
+	<!-- appender of STDOUT -->
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<!-- target 默认配置为 System.out -->
+		<target>System.out</target>
+
+		<!-- encoder 默认配置为PatternLayoutEncoder -->
+		<encoder>
+			<pattern>%d{yyyy-MM-dd|HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>
+		</encoder>
+	</appender>
+	
+	<logger name="org.bo" level="INFO" additivity="false">
+		<appender-ref ref="STDOUT" />
+	</logger>
+	
+	<!-- 
+		MyBatis Mapper文件的日志配置，name值为MyBatis Namespace的值
+		日志级别：DEBUG级别不显示结果集明细，只显示总条数；TRACE级别既显示结果集明细，又显示总条数。
+		MyBatis默认日志系统为SLF4J，3.1之前版本DEBUG级别可以显示明细，从3.2开始明细输出降级到TRACE级。
+		以上规则详情，请参阅Mybatis框架源码文件：org.apache.ibatis.logging.jdbc.ResultSetLogger
+	 -->
+	<logger name="CreeperControl" level="DEBUG" additivity="false">
+		<appender-ref ref="STDOUT" />
+	</logger>
+	
+	<logger name="CreeperContent" level="DEBUG" additivity="false">
+		<appender-ref ref="STDOUT" />
+	</logger>
+	
+	<root level="DEBUG">
+		<appender-ref ref="STDOUT" />
+	</root>
+</configuration>
