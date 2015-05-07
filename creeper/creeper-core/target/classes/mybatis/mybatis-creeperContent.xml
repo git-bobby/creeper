@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CreeperContent">
+	<resultMap type="CreeperHistory" id="CreeperHistoryMap">
+		<result property="historyId" column="history_id" />
+		<result property="acquisitionId" column="acquisition_id" />
+		<result property="channelUrl" column="channel_url" />
+		<result property="contentUrl" column="content_url" />
+		<result property="title" column="title" />
+		<result property="uniqueCode" column="unique_code" />
+		<result property="content" column="content" />
+		<result property="description" column="description" />
+		<result property="verifyStatus" column="verify_status" />
+	</resultMap>
+
+	<resultMap type="CreeperTemp" id="CreeperTempMap">
+		<result property="tempId" column="temp_id" />
+		<result property="channelUrl" column="channel_url" />
+		<result property="contentUrl" column="content_url" />
+		<result property="title" column="title" />
+		<result property="percent" column="percent" />
+		<result property="description" column="description" />
+		<result property="seq" column="seq" />
+	</resultMap>
+	
+	<!-- 根据条件查询采集历史记录 -->
+	<select id="findCreeperHistory" parameterType="CreeperHistory"
+		resultMap="CreeperHistoryMap">
+		select
+		t.history_id,t.acquisition_id,t.channel_url,t.content_url,t.title,t.unique_code,t.description,t.verify_status
+		from tbl_acquisition_history t
+		<where>
+			<if test="historyId !=null and historyId != ''">
+				and t.history_id=#{historyId}
+			</if>
+			<if test="acquisitionId !=null and acquisitionId != ''">
+				and t.acquisition_id=#{acquisitionId}
+			</if>
+			<if test="uniqueCode !=null and uniqueCode != ''">
+				and t.unique_code=#{uniqueCode}
+			</if>
+			<if test="description !=null and description != ''">
+				and t.description=#{description}
+			</if>
+			<if test="verifyStatus !=null">
+				and t.verify_status=#{verifyStatus}
+			</if>
+		</where>
+		order by t.history_id desc
+	</select>
+	
+	<!-- 保存采集历史记录 -->
+	<insert id="saveCreeperHistory" parameterType="CreeperHistory">
+		insert into
+		tbl_acquisition_history
+		(history_id,acquisition_id,channel_url,content_url,title,unique_code,content,description,verify_status)
+		values
+		(#{historyId},#{acquisitionId},#{channelUrl},#{contentUrl},#{title},#{uniqueCode},#{content},#{description},#{verifyStatus})
+	</insert>
+	
+	<!-- 保存采集临时进度 -->
+	<insert id="saveCreeperTemp" parameterType="CreeperTemp">
+		insert into
+		tbl_acquisition_temp
+		(temp_id,channel_url,content_url,title,percent,description,seq)
+		values
+		(#{tempId},#{channelUrl},#{contentUrl},#{title},#{percent},#{description},#{seq})
+	</insert>
+	
+	<!-- 删除采集临时进度 -->
+	<delete id="deleteCreeperTemp" parameterType="java.lang.String">
+		delete from tbl_acquisition_temp
+		<where>
+			<if test="_parameter != null and _parameter != ''">channel_url!=#{channelUrl}</if>
+		</where>
+	</delete>
+	
+	<!-- 查询采集临时记录列表 -->
+	<select id="findCreeperTemp" parameterType="CreeperTemp"
+		resultMap="CreeperTempMap">
+		select
+		t.temp_id,t.channel_url,t.content_url,t.title,t.percent,t.description,t.seq
+		from tbl_acquisition_temp t order by t.temp_id desc
+	</select>
+
+	<!-- 获取采集进度百分比 -->
+	<select id="getCurrentProgress" resultType="java.lang.Integer">
+		select t.percent from tbl_acquisition_temp t order by t.temp_id desc limit 0,1
+	</select>
+	
+</mapper>

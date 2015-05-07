@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CreeperControl">
+
+	<resultMap type="CreeperControl" id="CreeperControlMap">
+		<result property="acquisitionId" column="acquisition_id" />
+		<result property="categoryId" column="category_id" />
+		<result property="acqName" column="acq_name" />
+		<result property="startTime" column="start_time" />
+		<result property="endTime" column="end_time" />
+		<result property="status" column="status" />
+		<result property="currNum" column="curr_num" />
+		<result property="currItem" column="curr_item" />
+		<result property="totalItem" column="total_item" />
+		<result property="pauseTime" column="pause_time" />
+		<result property="pageEncoding" column="page_encoding" />
+		<result property="planList" column="plan_list" />
+		<result property="dynamicAddr" column="dynamic_addr" />
+		<result property="dynamicStart" column="dynamic_start" />
+		<result property="dynamicEnd" column="dynamic_end" />
+		<result property="linksetStart" column="linkset_start" />
+		<result property="linksetEnd" column="linkset_end" />
+		<result property="linksetSelector" column="linkset_selector" />
+		<result property="linksetIndex" column="linkset_index" />
+		<result property="linksetType" column="linkset_type" />
+		<result property="linkStart" column="link_start" />
+		<result property="linkEnd" column="link_end" />
+		<result property="linkSelector" column="link_selector" />
+		<result property="linkIndex" column="link_index" />
+		<result property="linkType" column="link_type" />
+		<result property="titleStart" column="title_start" />
+		<result property="titleEnd" column="title_end" />
+		<result property="titleSelector" column="title_selector" />
+		<result property="titleIndex" column="title_index" />
+		<result property="titleType" column="title_type" />
+		<result property="contentStart" column="content_start" />
+		<result property="contentEnd" column="content_end" />
+		<result property="contentSelector" column="content_selector" />
+		<result property="contentIndex" column="content_index" />
+		<result property="contentType" column="content_type" />
+		<result property="queue" column="queue" />
+		<result property="remark" column="remark" />
+	</resultMap>
+
+	<!-- 获取采集队列中的最大队列号 -->
+	<select id="getMaxQueue" resultType="java.lang.Integer">
+		select max(queue) maxQueue
+		from tbl_acquisition
+	</select>
+
+	<!-- 根据条件查询采集对象 -->
+	<select id="findCreeperControlByCondition" parameterType="CreeperControl"
+		resultMap="CreeperControlMap">
+		SELECT t.acquisition_id, t.category_id, t.acq_name, t.start_time,
+		t.end_time, t.`STATUS`, t.curr_num, t.curr_item, t.total_item,
+		t.pause_time, t.page_encoding, t.plan_list, t.dynamic_addr,
+		t.dynamic_start, t.dynamic_end, t.linkset_start,
+		t.linkset_end, t.linkset_selector, t.linkset_index, t.linkset_type, t.link_start,
+		t.link_end, t.link_selector,
+		t.link_index, t.link_type, t.title_start, t.title_end, t.title_selector,
+		t.title_index, t.title_type, t.content_start,
+		t.content_end, t.content_selector, t.content_index, t.content_type, t.queue,
+		t.remark
+		FROM tbl_acquisition t
+		<where>
+			<if test="acquisitionId !=null and acquisitionId != ''">
+				and t.acquisition_id=#{acquisitionId}
+			</if>
+			<if test="categoryId !=null and categoryId != ''">
+				and t.category_id=#{categoryId}
+			</if>
+			<if test="acqName !=null and acqName != ''">
+				and t.acq_name=#{acqName}
+			</if>
+			<if test="status !=null">
+				and t.status=#{status}
+			</if>
+		</where>
+	</select>
+
+	<!-- 更新采集对象 -->
+	<update id="updateCreeperControl" parameterType="CreeperControl">
+		update tbl_acquisition
+		<set>
+			<if test="startTime != null">start_time=#{startTime},</if>
+			<if test="endTime != null">end_time=#{endTime},</if>
+			<if test="status != null">status=#{status},</if>
+			<if test="currNum != null">curr_num=#{currNum},</if>
+			<if test="currItem != null">curr_item=#{currItem},</if>
+			<if test="totalItem != null">total_item=#{totalItem},</if>
+			<if test="queue != null">queue=#{queue},</if>
+		</set>
+		where acquisition_id=#{acquisitionId}
+	</update>
+	
+	<!-- 获取下一个待运行的采集对象 -->
+	<select id="popCreeperFromQueue" resultMap="CreeperControlMap">
+		SELECT t.acquisition_id, t.category_id, t.acq_name, t.start_time,
+		t.end_time, t.`STATUS`, t.curr_num, t.curr_item, t.total_item,
+		t.pause_time, t.page_encoding, t.plan_list, t.dynamic_addr,
+		t.dynamic_start, t.dynamic_end, t.linkset_start,
+		t.linkset_end, t.linkset_selector, t.linkset_index, t.linkset_type, t.link_start,
+		t.link_end, t.link_selector,
+		t.link_index, t.link_type, t.title_start, t.title_end, t.title_selector,
+		t.title_index, t.title_type, t.content_start,
+		t.content_end, t.content_selector, t.content_index, t.content_type, t.queue,
+		t.remark
+		FROM tbl_acquisition t
+		WHERE t.queue > 0 ORDER BY t.queue
+	</select>
+</mapper>

@@ -1,0 +1,193 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.bo</groupId>
+		<artifactId>creeper</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<artifactId>creeper-core</artifactId>
+	<name>creeper-core</name>
+	<url>http://maven.apache.org</url>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<distributionManagement>
+		<repository>
+			<id>nexus-releases</id>
+			<name>Nexus Release Repotitory</name>
+			<url>http://127.0.0.1:8081/nexus/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>nexus-snapshots</id>
+			<name>Nexus-snapshots</name>
+			<url>http://127.0.0.1:8081/nexus/content/repositories/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.creeper</groupId>
+			<artifactId>creeper</artifactId>
+			<version>1.4.1</version>
+			<classifier>min</classifier>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.faces</groupId>
+			<artifactId>jsf-api</artifactId>
+			<version>1.2_04</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.faces</groupId>
+			<artifactId>jsf-impl</artifactId>
+			<version>1.2_04</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.8.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.spec.javax.servlet.jstl</groupId>
+			<artifactId>jboss-jstl-api_1.2_spec</artifactId>
+			<version>1.1.2.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.1.3</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-core</artifactId>
+			<version>1.1.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis</artifactId>
+			<version>3.2.8</version>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.34</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.12</version>
+		</dependency>
+		<dependency>
+			<groupId>tomcat</groupId>
+			<artifactId>jsp-api</artifactId>
+			<version>5.5.23</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.4</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>**/*.xml</include>
+					<include>**/*.properties</include>
+				</includes>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>com.pyx4me</groupId>
+				<artifactId>proguard-maven-plugin</artifactId>
+				<dependencies>
+					<!-- 使用4.8版本来混淆 -->
+					<dependency>
+						<groupId>net.sf.proguard</groupId>
+						<artifactId>proguard</artifactId>
+						<version>4.8</version>
+						<scope>runtime</scope>
+					</dependency>
+				</dependencies>
+
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>proguard</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<attach>true</attach>
+					<attachArtifactClassifier>min</attachArtifactClassifier>
+					<!-- attach 的作用是在 install 与 deploy 时将生成的 pg 文件也安装与部署 -->
+					<options> <!-- 详细配置方式参考 ProGuard 官方文档 -->
+						<!--<option>-dontobfuscate</option> -->
+						<option>-ignorewarnings</option> <!--忽略所有告警 -->
+						<option>-dontshrink</option>   <!--不做 shrink -->
+						<option>-dontoptimize</option> <!--不做 optimize -->
+						<option>-dontskipnonpubliclibraryclasses</option> <!-- 指定不去忽略非公共的库类 -->
+						<option>-dontskipnonpubliclibraryclassmembers</option> <!-- 指定不去忽略包可见的库类的成员 -->
+						<option>-useuniqueclassmembernames</option><!-- 确定统一的混淆类的成员名称来增加混淆 -->
+						<option>-repackageclasses org.bo.**.min</option>
+						<!--平行包结构（重构包层次），所有混淆的类放在 pg 包下 -->
+
+						<!-- 以下为 Keep，哪些内容保持不变，因为有一些内容混淆后（a,b,c）导致反射或按类名字符串相关的操作失效 -->
+
+						<option>-keep class **.package-info</option>
+						<!--保持包注解类 -->
+
+						<option>-keepattributes Signature</option>
+						<!--JAXB NEED，具体原因不明，不加会导致 JAXB 出异常，如果不使用 JAXB 根据需要修改 -->
+						<!-- Jaxb requires generics to be available to perform xml parsing 
+							and without this option ProGuard was not retaining that information after 
+							obfuscation. That was causing the exception above. -->
+
+						<option>-keepattributes SourceFile,LineNumberTable,*Annotation*</option>
+						<!--保持源码名与行号（异常时有明确的栈信息），注解（默认会过滤掉所有注解，会影响框架的注解） -->
+
+						<option>-keepclassmembers enum
+							org.noahx.proguard.example.project2.**
+							{ *;}</option>
+						<!--保持枚举中的名子，确保枚举 valueOf 可以使用 -->
+
+						<option>-keep class org.noahx.proguard.example.project2.bean.** {
+							*;}</option>
+						<!--保持 Bean 类，（由于很多框架会对 Bean 中的内容做反射处理，请根据自己的业务调整） -->
+
+						<option>-keep class * {
+							public void init(); public void
+							destroy(); }
+						</option>
+						<!-- 保持对外的接口性质类对外的类名与方法名不变 -->
+
+					</options>
+					<outjar>${project.build.finalName}-min</outjar>
+					<libs>
+						<lib>${java.home}/lib/rt.jar</lib>
+					</libs>
+
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
